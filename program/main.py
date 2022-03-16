@@ -3,8 +3,11 @@ from tkinter import *
 from tkinter import ttk
 from tkcalendar import DateEntry
 from tkinter.filedialog import asksaveasfile
+from tkinter.messagebox import showinfo,askquestion
 from tkinter import filedialog
 import sys
+import csv
+
 """
 __        __         _      _____ _                
 \ \      / /__  _ __| | __ |_   _(_)_ __ ___   ___ 
@@ -13,28 +16,29 @@ __        __         _      _____ _
    \_/\_/ \___/|_|  |_|\_\   |_| |_|_| |_| |_|\___|V0.1
 """
 
-# základ okna
+# základ okna ###############################################
 okno = tk.Tk()
 okno.title("Evidence pracovní doby")
 # ikona okna
 ikona = PhotoImage(file="/home/jakub/GitHub/Work_time/program/clock.png")
-okno.iconphoto(False, ikona)
+okno.iconphoto(True, ikona)
 
 # menubar ###############################################
 def openfile():
     """Položka "Otevřít" v menu "Soubor" """
-    input = filedialog.askopenfile(initialdir="/")
-    print(input)
-    for i in input:
-        print(i)
+    with open("new.csv") as myfile:
+        csvread = csv.reader(myfile, delimiter=",")
+        for row in csvread:
+            tabulka.insert("", "end", values=row)
 
 def savefile(): 
     """ Položka "Uložit" v menu "Soubor" """ 
-    data = [('All tyes(*.*)', '*.*')]
-    file = asksaveasfile(filetypes = data, defaultextension = data)
-
-def savefileas():
-    """ Položka "Uložit jako" v menu "Soubor" """     
+    with open("new.csv", "w", newline="") as myfile:
+        csvwriter = csv.writer(myfile, delimiter=",")
+        for row_id in tabulka.get_children():
+            row = tabulka.item(row_id)["values"]
+            csvwriter.writerow(row)
+    showinfo("Uložení", "Uložení proběhlo v pořádku.")
 
 def info_menu():
     """ Položka "Info" v menu"""
@@ -44,12 +48,11 @@ def info_menu():
     Label(info_okno, text="WORK TIME v0.1", font="bold").grid(row=1, column=0, sticky="we", pady=5, padx=5)
     Label(info_okno, text="Jakub Kolář\nkolarkuba@gmail.com\n2022").grid(row=2, column=0, sticky="we", pady=5, padx=5)
     close_button = Button(info_okno,text = "Zavřít",command=lambda:info_okno.destroy()).grid(row=3, column=0, pady=5)
-    
+
 mb = Menu(okno)
 file_menu = Menu(mb, tearoff=0)
-file_menu.add_command(label="Otevřít", command=openfile)
+file_menu.add_command(label="Otevřít poslední", command=openfile)
 file_menu.add_command(label="Uložit", command=savefile)
-file_menu.add_command(label="Uložit jako", command=savefileas)
 file_menu.add_separator()
 file_menu.add_command(label="Zavřít", command=lambda:okno.destroy())
 mb.add_cascade(label="Soubor", menu=file_menu)
@@ -57,28 +60,18 @@ mb.add_command(label="Info", command=info_menu)
 okno.config(menu=mb)
 
 # Jméno ###############################################
+Label(okno, text="Jméno").grid(row=2, column=0, sticky="w", padx=5)
 jmeno = Entry(okno)
-jmeno.insert(10,"Jméno")
-jmeno.grid(row=2, column=0, sticky="w", padx=5)
-
-# Měsíc ###############################################
-mesic = Entry(okno)
-mesic.insert(10,"Měsíc")
-mesic.grid(row=3, column=0, sticky="w", padx=5)
+jmeno.insert(10,"")
+jmeno.grid(row=3, column=0, sticky="w", padx=5)
 
 # Součet ###############################################
 Label(okno, text="Celkem hodin").grid(row=2, column=0, sticky="e", padx=5)
-#vypocet_hodin = 
-odpracovano = 0
-soucet = Entry(okno, textvariable=odpracovano, width=5).grid(row=3, column=0, sticky="e", padx=5)
+h = 0 # součet všech hodin
+soucet = Entry(okno, width=5)
+soucet.insert(10,h)
+soucet.grid(row=3, column=0, sticky="e", padx=5, pady=5)
 
-def soucet():
-    total = 0.0
-    for data in listBox.get_children():
-        total += float(listBox.item(child, 'values')[3])
-    
-    lbl = Label(root,text=total,font=('helvetica',18))
-    lbl.grid(row=5)
 
 # tabulka ###############################################
 tabulka = ttk.Treeview(okno)
@@ -145,6 +138,8 @@ Button_frame.grid(row=6, column=0)
 def input_record():
     """ nastavení vyčítaní vkládacích polí"""
     global count
+    global h
+    global citac_hodin
     tabulka.insert(
     parent="",
     index="end",
@@ -163,9 +158,8 @@ def input_record():
     Do_entry.delete(0,END)
     Misto_entry.delete(0,END)
     Poznamka_entry.delete(0,END)
-    # čítač hodin
-    odpracovano += int(vypocet_hodin)
-
+    
+    
 def delete():
     """ Smazání vybraných dat z tabulky"""
     selected_item = tabulka.selection()[0]
