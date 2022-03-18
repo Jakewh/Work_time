@@ -74,14 +74,13 @@ soucet.grid(row=3, column=0, sticky="e", padx=5, pady=5)
 
 def soucet_hodin():
     """Součet všech "Hodin" v tabulce"""
-    global celkem_h
     od = "7:30"
     do = "16:00"
     rozbor_od = od.split(":")
     rozbor_do = do.split(":")
     prevod_od = (int(rozbor_od[0]) + float(rozbor_od[1])/60)
     prevod_do = (int(rozbor_do[0]) + float(rozbor_do[1])/60)
-    celkem_h + (prevod_do-prevod_od)
+    celkem_h += (prevod_do-prevod_od)
 
 
 # tabulka ###############################################
@@ -120,14 +119,13 @@ Input_frame.grid(row=5, column=0)
 Datum = Label(Input_frame,text="Datum").grid(row=0,column=0)
 Od = Label(Input_frame,text="Od").grid(row=0,column=1)
 Do = Label(Input_frame,text="Do").grid(row=0,column=2)
-Hodin = Label(Input_frame,text="Hodin").grid(row=0, column=3)
 Misto = Label(Input_frame,text="Místo").grid(row=0,column=4)
 Poznamka = Label(Input_frame,text="Poznámka").grid(row=0,column=5)
 # vkládací pole
 def added():
     """ Automatický výpočet hodin za den"""
     try :
-        h.set((int(Od_vstup.get().replace("", "") + int(Do_vstup.get().replace("", "")))))
+        h.set((int(Od_vstup.get().replace("", "")) + int(Do_vstup.get().replace("", ""))))
     except :
         pass
     Input_frame.after(1, added)
@@ -140,8 +138,7 @@ Od_vstup.grid(row=1,column=1)
 Do_vstup = Entry(Input_frame, width=8)
 Do_vstup.grid(row=1,column=2)
 h = StringVar()
-Hodin_vstup = Entry(Input_frame, textvariable=h, width=4)
-Hodin_vstup.grid(row=1,column=3)
+Hodin_vstup = Entry(Input_frame, textvariable=h, width=0)
 Input_frame.after(1,added)
 Misto_vstup = Entry(Input_frame, width=24)
 Misto_vstup.grid(row=1,column=4)
@@ -152,7 +149,7 @@ Poznamka_vstup.grid(row=1,column=5)
 Button_frame = Frame(okno)
 Button_frame.grid(row=6, column=0)
 
-def input_record():
+def vlozit_zaznam():
     """ nastavení vyčítaní vkládacích polí"""
     global count
     tabulka.insert(
@@ -174,20 +171,20 @@ def input_record():
     Hodin_vstup.delete(0,END)
     Misto_vstup.delete(0,END)
     Poznamka_vstup.delete(0,END)
-    print(h.get())
+    soucet_hodin()
     
-def delete():
+def smazat():
     """ Smazání vybraných dat z tabulky"""
     selected_item = tabulka.selection()[0]
     tabulka.delete(selected_item)
          
 # button "Vložit záznam"
 butt_plus = PhotoImage(file="/home/jakub/GitHub/Work_time/program/plus.png")
-Input_button = Button(Button_frame, command=input_record, image=butt_plus, relief="flat").grid(row=0, column=0, pady=5)
+Input_button = Button(Button_frame, command=vlozit_zaznam, image=butt_plus, relief="flat").grid(row=0, column=0, pady=5)
 
 # button "Smazat záznam"
 butt_minus = PhotoImage(file="/home/jakub/GitHub/Work_time/program/minus.png")
-delete_button = Button(Button_frame, command=delete, image=butt_minus, relief="flat").grid(row=0, column=1, pady=5)
+delete_button = Button(Button_frame, command=smazat, image=butt_minus, relief="flat").grid(row=0, column=1, pady=5)
 
 # metoda hlavního okna mainloop, udržuje okno otevřené
 okno.mainloop()
