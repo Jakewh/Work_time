@@ -26,19 +26,19 @@ okno.iconphoto(True, ikona)
 # menubar ###############################################
 def openfile():
     """Položka "Otevřít" v menu "Soubor" """
-    with open("new.csv") as myfile:
+    with open("vykaz.csv") as myfile:
         csvread = csv.reader(myfile, delimiter=",")
         for row in csvread:
             tabulka.insert("", "end", values=row)
 
 def savefile(): 
     """ Položka "Uložit" v menu "Soubor" """ 
-    with open("new.csv", "w", newline="") as myfile:
+    with open("vykaz.csv", "w", newline="") as myfile:
         csvwriter = csv.writer(myfile, delimiter=",")
         for row_id in tabulka.get_children():
             row = tabulka.item(row_id)["values"]
             csvwriter.writerow(row)
-    showinfo("Uložení", "Uložení proběhlo v pořádku.")
+    showinfo("Potvrzení", "Uložení proběhlo v pořádku.")
 
 def info_menu():
     """ Položka "Info" v menu"""
@@ -67,9 +67,9 @@ jmeno.grid(row=3, column=0, sticky="w", padx=5)
 
 # Součet ###############################################
 Label(okno, text="Celkem hodin").grid(row=2, column=0, sticky="e", padx=5)
-h = 0 # součet všech hodin
+celkem_h = 0 # součet všech hodin
 soucet = Entry(okno, width=5)
-soucet.insert(10,h)
+soucet.insert(10,celkem_h)
 soucet.grid(row=3, column=0, sticky="e", padx=5, pady=5)
 
 
@@ -106,30 +106,32 @@ for zaznam in data:
 Input_frame = Frame(okno)
 Input_frame.grid(row=5, column=0)
 # Popisky vkládacích polí
-Datum = Label(Input_frame,text="Datum")
-Datum.grid(row=0,column=0)
-Od = Label(Input_frame,text="Od")
-Od.grid(row=0,column=1)
-Do = Label(Input_frame,text="Do")
-Do.grid(row=0,column=2)
-Hodin = Label(Input_frame,text="")
-Hodin.grid(row=0, column=3)
-Misto = Label(Input_frame,text="Místo")
-Misto.grid(row=0,column=4)
-Poznamka = Label(Input_frame,text="Poznámka")
-Poznamka.grid(row=0,column=5)
+Datum = Label(Input_frame,text="Datum").grid(row=0,column=0)
+Od = Label(Input_frame,text="Od").grid(row=0,column=1)
+Do = Label(Input_frame,text="Do").grid(row=0,column=2)
+Hodin = Label(Input_frame,text="Hodin").grid(row=0, column=3)
+Misto = Label(Input_frame,text="Místo").grid(row=0,column=4)
+Poznamka = Label(Input_frame,text="Poznámka").grid(row=0,column=5)
 # vkládací pole
-Datum_entry = DateEntry(Input_frame, width=8)
-Datum_entry.grid(row=1,column=0)
-Od_entry = Entry(Input_frame, width=8)
-Od_entry.grid(row=1,column=1)
-Do_entry = Entry(Input_frame, width=8)
-Do_entry.grid(row=1,column=2)
-Hodin_entry = Entry(width=0)
-Misto_entry = Entry(Input_frame, width=24)
-Misto_entry.grid(row=1,column=4)
-Poznamka_entry = Entry(Input_frame, width=15)
-Poznamka_entry.grid(row=1,column=5)
+def added():
+    """ Automatický výpočet hodin za den"""
+    global h
+    try :
+        h = ((int(Od_vstup.get().replace("", "") + int(Do_vstup.get().replace("", "")))))
+    except :
+        pass
+    Input_frame.after(1, added)
+    return
+
+Datum_vstup = DateEntry(Input_frame, width=8).grid(row=1,column=0)
+Od_vstup = Entry(Input_frame, width=8).grid(row=1,column=1)
+Do_vstup = Entry(Input_frame, width=8).grid(row=1,column=2)
+h = StringVar()
+Hodin_vstup = Entry(Input_frame, textvariable=h, width=4).grid(row=1,column=3)
+Input_frame.after(1,added)
+Misto_vstup = Entry(Input_frame, width=24).grid(row=1,column=4)
+Poznamka_vstup = Entry(Input_frame, width=15).grid(row=1,column=5)
+
 
 # Rámec tlačítek ###############################################
 Button_frame = Frame(okno)
@@ -138,27 +140,25 @@ Button_frame.grid(row=6, column=0)
 def input_record():
     """ nastavení vyčítaní vkládacích polí"""
     global count
-    global h
-    global citac_hodin
     tabulka.insert(
     parent="",
     index="end",
     iid = count,
     text="",
     values=(
-    Datum_entry.get(),
-    Od_entry.get(),
-    Od_entry.get(),
-    Hodin_entry.get(),
-    Misto_entry.get(),
-    Poznamka_entry.get()))
+    Datum_vstup.get(),
+    Od_vstup.get(),
+    Do_vstup.get(),
+    Hodin_vstup.get(),
+    Misto_vstup.get(),
+    Poznamka_vstup.get()))
     count += 1   
-    Datum_entry.delete(0,END)
-    Od_entry.delete(0,END)
-    Do_entry.delete(0,END)
-    Misto_entry.delete(0,END)
-    Poznamka_entry.delete(0,END)
-    
+    Datum_vstup.delete(0,END)
+    Od_vstup.delete(0,END)
+    Do_vstup.delete(0,END)
+    Hodin_vstup.delete(0,END)
+    Misto_vstup.delete(0,END)
+    Poznamka_vstup.delete(0,END)
     
 def delete():
     """ Smazání vybraných dat z tabulky"""
