@@ -72,6 +72,17 @@ soucet = Entry(okno, width=5)
 soucet.insert(10,celkem_h)
 soucet.grid(row=3, column=0, sticky="e", padx=5, pady=5)
 
+def soucet_hodin():
+    """Součet všech "Hodin" v tabulce"""
+    global celkem_h
+    od = "7:30"
+    do = "16:00"
+    rozbor_od = od.split(":")
+    rozbor_do = do.split(":")
+    prevod_od = (int(rozbor_od[0]) + float(rozbor_od[1])/60)
+    prevod_do = (int(rozbor_do[0]) + float(rozbor_do[1])/60)
+    celkem_h + (prevod_do-prevod_od)
+
 
 # tabulka ###############################################
 tabulka = ttk.Treeview(okno)
@@ -115,9 +126,8 @@ Poznamka = Label(Input_frame,text="Poznámka").grid(row=0,column=5)
 # vkládací pole
 def added():
     """ Automatický výpočet hodin za den"""
-    global h
     try :
-        h = ((int(Od_vstup.get().replace("", "") + int(Do_vstup.get().replace("", "")))))
+        h.set((int(Od_vstup.get().replace("", "") + int(Do_vstup.get().replace("", "")))))
     except :
         pass
     Input_frame.after(1, added)
@@ -137,7 +147,6 @@ Misto_vstup = Entry(Input_frame, width=24)
 Misto_vstup.grid(row=1,column=4)
 Poznamka_vstup = Entry(Input_frame, width=15)
 Poznamka_vstup.grid(row=1,column=5)
-
 
 # Rámec tlačítek ###############################################
 Button_frame = Frame(okno)
@@ -165,6 +174,7 @@ def input_record():
     Hodin_vstup.delete(0,END)
     Misto_vstup.delete(0,END)
     Poznamka_vstup.delete(0,END)
+    print(h.get())
     
 def delete():
     """ Smazání vybraných dat z tabulky"""
