@@ -123,14 +123,20 @@ def added():
     Input_frame.after(1, added)
     return
 
-Datum_vstup = DateEntry(Input_frame, width=8).grid(row=1,column=0)
-Od_vstup = Entry(Input_frame, width=8).grid(row=1,column=1)
-Do_vstup = Entry(Input_frame, width=8).grid(row=1,column=2)
+Datum_vstup = DateEntry(Input_frame, width=8)
+Datum_vstup.grid(row=1,column=0)
+Od_vstup = Entry(Input_frame, width=8)
+Od_vstup.grid(row=1,column=1)
+Do_vstup = Entry(Input_frame, width=8)
+Do_vstup.grid(row=1,column=2)
 h = StringVar()
-Hodin_vstup = Entry(Input_frame, textvariable=h, width=4).grid(row=1,column=3)
+Hodin_vstup = Entry(Input_frame, textvariable=h, width=4)
+Hodin_vstup.grid(row=1,column=3)
 Input_frame.after(1,added)
-Misto_vstup = Entry(Input_frame, width=24).grid(row=1,column=4)
-Poznamka_vstup = Entry(Input_frame, width=15).grid(row=1,column=5)
+Misto_vstup = Entry(Input_frame, width=24)
+Misto_vstup.grid(row=1,column=4)
+Poznamka_vstup = Entry(Input_frame, width=15)
+Poznamka_vstup.grid(row=1,column=5)
 
 
 # Rámec tlačítek ###############################################
