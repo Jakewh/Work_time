@@ -101,6 +101,7 @@ def smazat():
 # základ okna ###############################################
 okno = tk.Tk()
 okno.title("Evidence pracovní doby")
+okno.resizable(False, False)
 # ikona okna
 ikona = PhotoImage(file="/home/jakub/GitHub/Work_time/program/clock.png")
 okno.iconphoto(True, ikona)
