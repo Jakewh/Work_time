@@ -68,21 +68,40 @@ def info():
     Label(info_okno, text="WORK TIME v0.1", font="bold").grid(row=1, column=0, sticky="we", pady=5, padx=5)
     Label(info_okno, text="Jakub Kolář\nkolarkuba@gmail.com\n2022").grid(row=2, column=0, sticky="we", pady=5, padx=5)
 
-
 # tabulka dat ###############################################
 radek = 1
-zaznam = 0
+celkem_h = 0
+
+def smazat():
+    Od_vstup.destroy()
+
 # popisky tabulky
 popisky = Frame(okno)
-popisky.grid(row=1, column=0)
+popisky.grid(row=2, column=0)
 Datum = Label(popisky,text="Datum", width=8, bg="#BFBFBF").grid(row=0,column=0)
 Od = Label(popisky,text="Od", width=8, bg="#BFBFBF").grid(row=0,column=1)
 Do = Label(popisky,text="Do", width=8, bg="#BFBFBF").grid(row=0,column=2)
-Hodin = Label(popisky,text="Hodin", bg="#BFBFBF").grid(row=0,column=3)
+Hodin = Label(popisky,text="Hodin", bg="#BFBFBF", width=5).grid(row=0,column=3)
 Misto = Label(popisky,text="Místo", width=24, bg="#BFBFBF").grid(row=0,column=4)
 Poznamka = Label(popisky,text="Poznámka", width=15, bg="#BFBFBF").grid(row=0,column=5)
-smazat = Label(popisky,text="", width=3, bg="#BFBFBF").grid(row=0,column=6)
-nic = Label(popisky,text="Zatím žádný záznam", font=("Helvetica", 8)).grid(row=1, column=2, columnspan=3, pady=20)
+smazat = Label(popisky,text="✖", width=5, bg="#BFBFBF").grid(row=0,column=6)
+celkem = Label(popisky, text="Celkem", width=8, bg="#BFBFBF").grid(row=47,column=0, pady=5, sticky="w")
+vypln = Label(popisky, bg="#BFBFBF").grid(row=47,column=1, sticky="we")
+vypln1 = Label(popisky, bg="#BFBFBF").grid(row=47,column=2, sticky="we")
+celkem_h_cislo = Label(popisky, text=celkem_h, width=5, bg="#BFBFBF").grid(row=47,column=3, pady=5, sticky="w")
+
+def vypocet_za_den():
+    """ vypočte počet odpracovaných hodin za den """
+    global celkem_h
+    od = Od_vstup.get()
+    do = Do_vstup.get()
+    rozbor_od = od.split(":")
+    rozbor_do = do.split(":")
+    prevod_od = (int(rozbor_od[0]) + float(rozbor_od[1])/60)
+    prevod_do = (int(rozbor_do[0]) + float(rozbor_do[1])/60)
+    celkem_h = (float(celkem_h) + (prevod_do-prevod_od))
+    celkem_h_cislo = Label(popisky, text=celkem_h, width=5, bg="#BFBFBF").grid(row=47,column=3, pady=5, sticky="w")
+    return (prevod_do-prevod_od)
 
 # vkládací pole ###############################################
 Input_frame = Frame(okno)
@@ -98,10 +117,10 @@ Od_vstup.grid(row=1,column=1)
 Do_vstup = Entry(Input_frame, width=8)
 Do_vstup.insert(0, "do")
 Do_vstup.grid(row=1,column=2)
-Misto_vstup = Entry(Input_frame, width=24)
+Misto_vstup = Entry(Input_frame, width=26)
 Misto_vstup.insert(0, "místo")
 Misto_vstup.grid(row=1,column=4)
-Poznamka_vstup = Entry(Input_frame, width=15)
+Poznamka_vstup = Entry(Input_frame, width=17)
 Poznamka_vstup.insert(0, "poznámka")
 Poznamka_vstup.grid(row=1,column=5)
 
@@ -111,19 +130,18 @@ Button_frame.grid(row=51, column=0)
 # button "+"
 def pridat():
     global radek
-    global nic
+    global zaznam
+    global vypocet_za_den
     Label(popisky, text=Datum_vstup.get()).grid(row=radek, column=0)
     Label(popisky, text=Od_vstup.get()).grid(row=radek, column=1)
     Label(popisky, text=Do_vstup.get()).grid(row=radek, column=2)
-    Label(popisky, text="hodin").grid(row=radek, column=3)
+    Label(popisky, text=vypocet_za_den()).grid(row=radek, column=3)
     Label(popisky, text=Misto_vstup.get()).grid(row=radek, column=4)
     Label(popisky, text=Poznamka_vstup.get()).grid(row=radek, column=5)
-    zaznam += 1
+    smazat_button = Button(popisky, text="✖", command=smazat, relief="flat").grid(row=radek, column=6)
+
     radek += 1
 
 Input_button = Button(Button_frame, text="✚", command=pridat, relief="flat", font=(18)).grid(row=0, column=0, pady=5)
-
-
-
 
 okno.mainloop()
