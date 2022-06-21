@@ -17,6 +17,11 @@ __        __         _      _____ _
    \_/\_/ \___/|_|  |_|\_\   |_| |_|_| |_| |_|\___|V0.1
 """
 
+def jdi_na_web():
+    """ otevře odkaz v prohlížeči """
+    webbrowser.open_new(url)
+    
+
 
 # základ okna ###############################################
 okno = tk.Tk()
@@ -29,16 +34,16 @@ okno.iconphoto(True, ikona)
 # menubar ###############################################
 def openfile():
     """Položka "Otevřít" v menu "Soubor" """
-    with open("vykaz.csv") as myfile:
-        csvread = csv.reader(myfile, delimiter=",")
-        for row in csvread:
-            tabulka.insert("", "end", values=row)
+    
 
 def save(): 
     """ Položka "Uložit" v menu "Soubor" """ 
-    Files = [('Text Document', '*.txt')]
-    file = asksaveasfile(filetypes = Files, defaultextension = Files)
-    showinfo("Potvrzení", "Uložení proběhlo v pořádku.")
+    vykaz = open("vykaz.csv", "a", encoding="utf-8", newline="")
+    vykaz_zapis = csv.writer(vykaz)
+    vykaz_zapis.writerow([Datum_vstup.get(), Od_vstup.get(), Do_vstup.get(), vypocet_za_den(), Misto_vstup.get(), Poznamka_vstup.get()])
+    vykaz.close()
+    showinfo("Potvrzení", "Vložení a uložení záznamu\nproběhlo v pořádku.")
+    
 
 def info():
     """ Položka "Info" v menu"""
@@ -46,7 +51,7 @@ def info():
     info_okno.title("Info")
     Label(info_okno, image=ikona).grid(row=0, column=0, pady=5)
     Label(info_okno, text="WORK TIME v0.1", font="bold").grid(row=1, column=0, sticky="we", pady=5, padx=5)
-    Label(info_okno,text="Program pro záznam odpracovaných hodin v zaměstnání").grid(row=2, column=0, sticky="we", pady=5, padx=5)
+    Label(info_okno,text="Program pro záznam odpracovaných hodin.").grid(row=2, column=0, sticky="we", pady=5, padx=5)
     autori = Label(info_okno)
     autori.grid(row=3, column=0)
     Label(autori, text="Jakub Kolář\nkolarkuba@gmail.com", font=("Helvetica", 9)).grid(row=0, column=0, sticky="we", pady=5, padx=5)
@@ -56,7 +61,7 @@ def info():
     odkaz_gnu.bind("<Button-1>", lambda:jdi_na_web("https://www.gnu.org/licenses/gpl-3.0.html"))
 
 mb = Menu(okno, relief="flat")
-file_menu = Menu(mb, tearoff=0)
+file_menu = Menu(mb, tearoff=0, relief="flat")
 file_menu.add_command(label="🗁 Otevřít poslední", command=openfile)
 file_menu.add_command(label="🖫 Uložit", command=save)
 file_menu.add_separator()
@@ -83,16 +88,16 @@ def smazat():
 # popisky tabulky
 popisky = Frame(okno)
 popisky.grid(row=2, column=0)
-Datum = Label(popisky,text="Datum", width=8, bg="#BFBFBF").grid(row=0,column=0)
-Od = Label(popisky,text="Od", width=8, bg="#BFBFBF").grid(row=0,column=1)
-Do = Label(popisky,text="Do", width=8, bg="#BFBFBF").grid(row=0,column=2)
-Hodin = Label(popisky,text="Hodin", bg="#BFBFBF", width=5).grid(row=0,column=3)
-Misto = Label(popisky,text="Místo", width=24, bg="#BFBFBF").grid(row=0,column=4)
-Poznamka = Label(popisky,text="Poznámka", width=15, bg="#BFBFBF").grid(row=0,column=5)
-celkem = Label(popisky, text="Celkem", width=8, bg="#BFBFBF").grid(row=47,column=0, pady=5, sticky="w")
-vypln = Label(popisky, bg="#BFBFBF").grid(row=47,column=1, sticky="we")
-vypln1 = Label(popisky, bg="#BFBFBF").grid(row=47,column=2, sticky="we")
-celkem_h_cislo = Label(popisky, text=celkem_h, width=5, bg="#BFBFBF").grid(row=47,column=3, pady=5, sticky="w")
+Datum = Label(popisky,text="Datum", width=8, bg="gray", fg="black").grid(row=0,column=0)
+Od = Label(popisky,text="Od", width=8, bg="gray", fg="black").grid(row=0,column=1)
+Do = Label(popisky,text="Do", width=8, bg="gray", fg="black").grid(row=0,column=2)
+Hodin = Label(popisky,text="Hodin", bg="gray", width=5, fg="black").grid(row=0,column=3)
+Misto = Label(popisky,text="Místo", width=24, bg="gray", fg="black").grid(row=0,column=4)
+Poznamka = Label(popisky,text="Poznámka", width=15, bg="gray", fg="black").grid(row=0,column=5)
+celkem = Label(popisky, text="Celkem", width=8, bg="gray", fg="black").grid(row=47,column=0, pady=5, sticky="w")
+vypln = Label(popisky, bg="gray").grid(row=47,column=1, sticky="we")
+vypln1 = Label(popisky, bg="gray").grid(row=47,column=2, sticky="we")
+celkem_h_cislo = Label(popisky, text=celkem_h, fg="black", width=5, bg="gray").grid(row=47,column=3, pady=5, sticky="w")
 
 def vypocet_za_den():
     """ vypočte počet odpracovaných hodin za den """
@@ -104,14 +109,14 @@ def vypocet_za_den():
     prevod_od = (int(rozbor_od[0]) + float(rozbor_od[1])/60)
     prevod_do = (int(rozbor_do[0]) + float(rozbor_do[1])/60)
     celkem_h = (float(celkem_h) + (prevod_do-prevod_od))
-    celkem_h_cislo = Label(popisky, text=celkem_h, width=5, bg="#BFBFBF").grid(row=47,column=3, pady=5, sticky="w")
+    celkem_h_cislo = Label(popisky, bg="gray", text=celkem_h, width=5).grid(row=47,column=3, pady=5, sticky="w")
     return (prevod_do-prevod_od)
 
 # vkládací pole ###############################################
 Input_frame = Frame(okno)
 Input_frame.grid(row=50, column=0)
-Label(okno,text="vložit nový záznam", font=("Helvetica", 8)).grid(row=49, column=0, padx=5, sticky="w")
-ttk.Separator(okno, orient='horizontal').grid(row=48, column=0, pady=15, sticky="we")
+Label(okno, text="vložit nový záznam", font=("Helvetica", 8)).grid(row=49, column=0, padx=5, sticky="w")
+ttk.Separator(okno, orient="horizontal").grid(row=48, column=0, pady=15, sticky="we")
 
 Datum_vstup = DateEntry(Input_frame, width=8)
 Datum_vstup.grid(row=1,column=0)
@@ -131,19 +136,28 @@ Poznamka_vstup.grid(row=1,column=5)
 # Rámec tlačítek ###############################################
 Button_frame = Frame(okno)
 Button_frame.grid(row=51, column=0) 
+
 # button "+"
 def pridat():
+    """ přidá nový záznam do tabulky """
     global radek
     global zaznam
     global vypocet_za_den
-    Label(popisky, text=Datum_vstup.get()).grid(row=radek, column=0)
-    Label(popisky, text=Od_vstup.get()).grid(row=radek, column=1)
-    Label(popisky, text=Do_vstup.get()).grid(row=radek, column=2)
-    Label(popisky, text=vypocet_za_den()).grid(row=radek, column=3)
-    Label(popisky, text=Misto_vstup.get()).grid(row=radek, column=4)
-    Label(popisky, text=Poznamka_vstup.get()).grid(row=radek, column=5)
-    radek += 1
+    try:
+        Label(popisky, text=vypocet_za_den()).grid(row=radek, column=3)
+        Label(popisky, text=Datum_vstup.get()).grid(row=radek, column=0)
+        Label(popisky, text=Od_vstup.get()).grid(row=radek, column=1)
+        Label(popisky, text=Do_vstup.get()).grid(row=radek, column=2)
+        Label(popisky, text=Misto_vstup.get()).grid(row=radek, column=4)
+        Label(popisky, text=Poznamka_vstup.get()).grid(row=radek, column=5)
+        radek += 1
+        save()
+    except:
+        showinfo("Chyba", "Záznam nevložen.\nZkontroluj vkládaná data.")
 
-Input_button = Button(Button_frame, text="✚", command=pridat, relief="flat", font=(18)).grid(row=0, column=0, pady=5)
+Input_button = Button(Button_frame, text="✚", command=pridat, relief="flat", font=(18), foreground="#7289da", activeforeground="#7289da")
+Input_button.grid(row=0, column=0, pady=5)
+
+
 
 okno.mainloop()
